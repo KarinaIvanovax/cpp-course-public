@@ -1,0 +1,5 @@
+*.o
+build/
+.vscode/
+classTask1
+db.txt
