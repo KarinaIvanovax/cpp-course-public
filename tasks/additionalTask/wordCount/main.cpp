@@ -24,10 +24,54 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <unordered_map>
+#include <iterator>
 
+
+void removePunctuation(std::string& str) {
+    str.erase(std::remove_if(str.begin(), str.end(), ::ispunct), str.end());
+}
 
 int main() {
-    // ваше решение
+    std::ifstream inputFile("input.txt");
+
+    if (!inputFile.is_open()) {
+        std::cerr << "Невозможно открыть файл!" << std::endl;
+        return 1;
+    }
+
+    std::string line;
+    int sentenceNumber = -1;
+
+    while (std::getline(inputFile, line)) {
+        removePunctuation(line);
+        std::transform(line.begin(), line.end(), line.begin(), ::tolower);
+
+        std::istringstream iss(line);
+        std::unordered_map<std::string, int> wordCount;
+
+        std::string word;
+        while (iss >> word) {
+            wordCount[word]++;
+        }
+
+        std::vector<std::string> nonUniqueWords;
+        for (const auto& pair : wordCount) {
+            if (pair.second >= 2) {
+                nonUniqueWords.push_back(pair.first);
+            }
+        }
+
+        if (!nonUniqueWords.empty()) {
+            std::cout << ++sentenceNumber << ":";
+            std::copy(nonUniqueWords.begin(), nonUniqueWords.end() - 1, std::ostream_iterator<std::string>(std::cout, ","));
+            std::cout << nonUniqueWords.back() << '\n';
+        } else {
+            sentenceNumber++;
+        }
+    }
+
+    inputFile.close();
 
     return 0;
 }
